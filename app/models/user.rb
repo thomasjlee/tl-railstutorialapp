@@ -9,6 +9,7 @@ class User < ApplicationRecord
                     uniqueness: { case_sensitive: false }
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
+  has_many :microposts, dependent: :destroy
 
   # Remembers a user in the database for use in persistent sessions.
   def remember
@@ -51,6 +52,10 @@ class User < ApplicationRecord
 
   def password_reset_expired?
     reset_sent_at < 2.hours.ago
+  end
+
+  def feed
+    Micropost.where("user_id = ?", id)
   end
 
   class << self
